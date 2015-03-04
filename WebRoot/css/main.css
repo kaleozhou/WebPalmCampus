@@ -1,0 +1,36 @@
+.desc {
+    color: #6F6F6F;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0px 0px 60px;
+}
+.btn{
+	background:url("image/btn.jpg")
+	
+}
+.item{
+	
+	width:960px;
+	height: 800px;
+	margin: 0px auto
+	
+	
+	
+}
+.downitem{
+	float:left;
+	
+	
+	
+}
+.figure{
+	float:left;
+	
+	
+	
+}
+.footer
+{
+	float: left
+	
+}

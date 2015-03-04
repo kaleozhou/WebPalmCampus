@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	     xmlns:tx="http://www.springframework.org/schema/tx"
+	     xsi:schemaLocation="http://www.springframework.org/schema/beans
+	     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      	 http://www.springframework.org/schema/aop 
+      	 http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+     	 http://www.springframework.org/schema/tx 
+     	 http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+<!-- 声明式事务  Start-->
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>	
+	<!-- 
+		PROPAGATION_REQUIRED:支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。 
+		PROPAGATION_SUPPORTS:支持当前事务，如果当前没有事务，就以非事务方式执行。 
+		PROPAGATION_MANDATORY:支持当前事务，如果当前没有事务，就抛出异常。 
+		PROPAGATION_REQUIRES_NEW:新建事务，如果当前存在事务，把当前事务挂起。 
+		PROPAGATION_NOT_SUPPORTED:以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。 
+		PROPAGATION_NEVER:以非事务方式执行，如果当前存在事务，则抛出异常。 
+	 -->
+	<!-- 配置通知（增强） -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="find002A" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="do*" propagation="REQUIRED"></tx:method>
+			<tx:method name="*" propagation="SUPPORTS"  />
+		</tx:attributes>
+	</tx:advice>	
+	<!-- 定义切面 -->
+	<aop:config proxy-target-class="true">
+		<!-- 切点 -->
+		<!--  
+			* com.bll.impl.*.*(..)
+			com.bll.impl:指定包名
+			第一个*:任意的返回类型
+			第二个*:任意类
+			第三个*:任意方法
+			..:任意参数
+			注意: 要把事务边界设置到业务层上
+		-->
+			<aop:pointcut id="bizMethods" 
+			expression="execution(* com.org.palmcampus.bll.impl.*.*(..))"/>
+			
+		<!-- 通知（增强） -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="bizMethods"/>
+	</aop:config>
+<!-- 声明式事务 End-->
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="configLocation"
+			value="classpath:hibernate.cfg.xml">
+		</property>
+	</bean>
+	
+	<!-- 配置DAO -->
+		<bean id="ErpnetEmailIDAO"
+		class="com.org.palmcampus.dao.impl.ErpnetEmailDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ErpgongGaoIDAO"
+		class="com.org.palmcampus.dao.impl.ErpgongGaoDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ErplanEmailIDAO"
+		class="com.org.palmcampus.dao.impl.ErplanEmailDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ErpuserIDAO" class="com.org.palmcampus.dao.impl.ErpuserDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<!-- 配置BLL -->
+	<bean id="ErpuserIService" class="com.org.palmcampus.bll.impl.ErpuserService">
+	<property name="userId">
+	<ref bean="ErpuserIDAO"/>
+	</property>
+	</bean>
+	<bean id="ErpgongGaoIService" class="com.org.palmcampus.bll.impl.ErpgongGaoService">
+	<property name="gonggaoId">
+	<ref bean="ErpgongGaoIDAO"/>
+	</property>
+	</bean>
+	<bean id="ErplanEmailIService" class="com.org.palmcampus.bll.impl.ErplanEmailService">
+	<property name="lanemailId">
+	<ref bean="ErplanEmailIDAO"/>
+	</property>
+	</bean>
+	<bean id="ErpnetEmailIService" class="com.org.palmcampus.bll.impl.ErpnetEmailService">
+	<property name="netemailId">
+	<ref bean="ErpnetEmailIDAO"/>
+	</property>
+	</bean>
+
+	<!-- 配置ACTION -->
+	<!-- 登录 -->
+	<bean id="login_phonea" class="com.org.palmcampus.action.PhoneLogin">
+	<property name="userIs">
+	<ref bean="ErpuserIService"/>
+	</property>
+	</bean>
+	<!-- 退出系统 -->
+	<bean id="sysexit_phonea" class="com.org.palmcampus.action.SysExit">
+	<property name="userIs">
+	<ref bean="ErpuserIService"/>
+	</property>
+	</bean>
+	<!-- 发送邮件 -->
+	<bean id="sendEmail_phonea" class="com.org.palmcampus.action.SendEmail">
+	<property name="lanemailIs">
+	<ref bean="ErplanEmailIService"></ref>
+	</property>
+	</bean>
+	<!-- 接受邮件 -->
+	<bean id="receiveEmail_phonea" class="com.org.palmcampus.action.ReceiveEmail">
+	<property name="lanemailIs">
+	<ref bean="ErplanEmailIService"></ref>
+	</property>
+	</bean>
+	<!-- 接受公告 -->
+	<bean id="receiveGonggao_phonea" class="com.org.palmcampus.action.ReceiveGonggao">
+	<property name="gonggaoIs">
+	<ref bean="ErpgongGaoIService"></ref>
+	</property>
+	</bean>
+	<!-- 公告留言 -->
+	<bean id="gongGaoLiuYan_phonea" class="com.org.palmcampus.action.GongGaoLiuYan">
+	<property name="gonggaoIs">
+	<ref bean="ErpgongGaoIService"></ref>
+	</property>
+	</bean>
+	<!-- 获取邮件联系人 -->	
+	<bean id="getEmailContact_phonea" class="com.org.palmcampus.action.GetEmailContact">
+	<property name="userIs">
+	<ref bean="ErpuserIService"></ref>
+	</property>
+	</bean>	
+	<!-- 修改密码 -->	
+	<bean id="changePwd_phonea" class="com.org.palmcampus.action.Changepwd">
+	<property name="userIs">
+	<ref bean="ErpuserIService"></ref>
+	</property>
+	</bean>		
+
+	<!-- 配置ACTION -->
+	
+	
+</beans>

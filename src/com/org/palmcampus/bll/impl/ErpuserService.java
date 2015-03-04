@@ -1,0 +1,161 @@
+package com.org.palmcampus.bll.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+
+import com.org.palmcampus.bll.ErpuserIService;
+import com.org.palmcampus.dao.ErpuserIDAO;
+import com.org.palmcampus.md5.MD5;
+import com.org.palmcampus.pojo.Erpuser;
+
+
+
+/** 
+* @ClassName: ErpuserService 
+* @Description: 用户表的接口实现类 
+* @author: kaleo 
+* @date 2014-8-13 上午9:52:33 
+*  
+*/ 
+public class ErpuserService implements ErpuserIService {
+	private String Tag="ErpuserService";
+	private static Logger logger=Logger.getLogger(ErpuserService.class.getName());
+	private ErpuserIDAO userId;
+	public void setUserId(ErpuserIDAO userId) {
+		this.userId = userId;
+	}
+
+
+
+
+	/**
+	 * @Title: PhoneLogin
+	 * @Description: TODO(手机端登录接口)
+	 * @param @param username
+	 * @param @param password
+	 * @param @return i 0、登录成功 1、登录用户名不存在 2、密码错误   3、已经登录
+	 * @return int    返回类型
+	 * @throws 无
+	 */
+	@Override
+	public int updateLogin(String username, String password) {
+		// TODO Auto-generated method stub
+		int i=1;
+
+		List ls=userId.findByTrueName(username);
+		if(ls!=null&&ls.size()>=1)
+		{
+			Erpuser u=(Erpuser)ls.get(0);
+			MD5 md5=new MD5();
+			
+			if(u.getUserPwd().equals(md5.getMD5ofStr(password)))
+			{
+				if(u.getIfLogin().equals("是"))
+				{
+				i=0;
+				logger.info(username+"登录成功");
+				}
+				else
+				{
+					i=3;
+					
+				}	
+				//u.setIfLogin("是");
+				//userId.update(u);
+			}
+			else
+			{
+				i=2;
+				logger.info(username+"登录失败，密码错误！");
+			}
+			
+			
+		}
+		else
+		{
+		logger.info(username+"登录失败，用户名不存在");
+		
+		}
+		logger.info(i+"返回数值");
+		return i;
+		
+	}
+
+
+	
+	/* (非 Javadoc) 
+	* <p>Title: findByUname</p>
+	* <p>Description: </p>
+	* @param username
+	* @return 
+	* @see com.org.palmcampus.bll.ErpuserIService#findByUname(java.lang.String) 
+	*/ 
+	@Override
+	public Erpuser findByTrueName(String username) {
+		// TODO Auto-generated method stub
+		Erpuser u=null;
+		List ls=userId.findByTrueName(username);
+		logger.info("查询到："+ls.size());
+		if(ls.size()>=1)
+		{
+			 u=(Erpuser)ls.get(0);
+			 logger.info("找到用户"+username);
+			
+		}
+		else
+		{
+		logger.info("没有找到"+username);
+		}
+		return u;
+	}
+
+
+
+
+	/* (非 Javadoc) 
+	* <p>Title: updateUser</p>
+	* <p>Description: </p>
+	* @param u
+	* @return 
+	* @see com.org.palmcampus.bll.ErpuserIService#updateUser(com.org.palmcampus.pojo.Erpuser) 
+	*/ 
+	
+	@Override
+	public void updateUser(Erpuser u) {
+		// TODO Auto-generated method stub
+		userId.update(u);
+	}
+
+
+
+
+	/* (非 Javadoc) 
+	* <p>Title: findallusername</p>
+	* <p>Description: </p>
+	* @return 
+	* @see com.org.palmcampus.bll.ErpuserIService#findallusername() 
+	*/ 
+	
+	@Override
+	public List<Erpuser> findAllUserName() {
+		// TODO Auto-generated method stub
+		List<Erpuser> ls=userId.findAll();
+
+		
+		
+		return ls;
+	}
+
+
+
+
+
+
+
+
+}
+
+
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+
+	<package name="kaleo" extends="json-default">
+		<!-- 手机登录 -->
+		<action name="login_phonea" class="login_phonea">
+		</action>
+		<!-- 手机登录 -->
+		<!-- 退出系统 -->
+		<action name="sysexit_phonea" class="sysexit_phonea">
+		</action>
+		<!-- 退出系统 -->
+		<!-- 发送邮件 -->
+		<action name="sendEmail_phonea" class="sendEmail_phonea">
+		</action>
+		<!-- 发送邮件 -->
+		<!-- 接受邮件 -->
+		<action name="receiveEmail_phonea" class="receiveEmail_phonea">
+		</action>
+		<!-- 接受邮件 -->
+		<!-- 接受新闻通告 -->
+		<action name="receiveGonggao_phonea" class="receiveGonggao_phonea">
+		</action>
+		<action name="gongGaoLiuYan_phonea" class="gongGaoLiuYan_phonea">
+		</action>
+		<!-- 接受新闻通告 -->
+		<!-- 获取邮件联系人 -->
+		<action name="getEmailContact_phonea" class="getEmailContact_phonea">
+		</action>
+		<!-- 获取邮件联系人 -->
+		<!-- 修改密码 -->
+		<action name="changePwd_phonea" class="changePwd_phonea">
+		</action>
+		<!--修改密码-->
+
+	</package>
+</struts>    
